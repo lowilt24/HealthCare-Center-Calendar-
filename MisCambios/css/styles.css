@@ -1,0 +1,100 @@
+main {
+    font-family: Poppins;
+    margin-top: 100px;
+    margin-left: 125px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: row;
+}
+
+.login_tab {
+    box-sizing: border-box;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 15px;
+    background-color: white;
+    width: 40%;
+    
+}
+h2 {
+    margin: 10px 0;
+}
+h4 {
+    margin: 0;
+    letter-spacing: 2px;
+    font-weight: normal;
+}
+
+h6 {
+    margin: 0;
+    font-weight: 300;
+}
+
+span {
+    font-weight: 600;
+}
+
+form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+
+}
+
+input {
+    width: 95%;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.label {
+    width: 95%;
+    margin-top: 10px;
+}
+
+#submit {
+    margin-top: 20px;
+    background-color: #0C41FF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+img {
+    box-sizing: border-box;
+    margin-top: 50px;
+    height: 400px;
+    width: 500px;
+    object-fit: cover;
+}
+
+
+.inputandicon{
+    position: relative;
+    display: inline-block;
+}
+
+.inputandicon input {
+    width: 95%;
+    padding:10px;
+}
+
+.inputandicon .icono {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.submit{
+    width: 25%;
+    cursor: pointer;
+}
+
+.link-text{
+    color:black;
+    font-weight: bold;
+    text-decoration: none;
+}

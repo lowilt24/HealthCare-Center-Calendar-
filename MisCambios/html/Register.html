@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://kit.fontawesome.com/43eb8f3da4.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <main>
+        <div class="login_tab">
+            <h4>Welcome!</h4>
+            <h2>Sign up</h2>
+            <h6>Stay updated with your appointments!</h6>
+
+            <form action="MainPage.html" id="form">
+                <label class="label" for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter Your Email" required>
+
+                <label class="label" for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter Your Username" required>
+
+                <label class="label" for="pass1">Password</label>
+                <div class="inputandicon">
+                    <input type="password" id="pass1" placeholder="Enter Your Password" required class="pass">
+                    <i class="fa-regular fa-eye icono" data-target="pass1"></i>
+                </div>
+
+                <label class="label" for="pass2">Confirm Password</label>
+                <div class="inputandicon">
+                    <input type="password" id="pass2" placeholder="Confirm Your Password" required class="pass2">
+                    <i class="fa-regular fa-eye icono" data-target="pass2"></i>
+                </div>
+                
+                <input type="submit" id="submit" class="submit" value="Register">   
+            </form>
+           
+            <h6>already have an account? <a href="Login.html" class="link-text">Login</a></h6>
+           
+           
+        </div>
+        <img src="../photos/doct.jpg" alt="doctor img">
+        <script src="../js/register.js"></script>
+    </main>
+</body>
+</html>
