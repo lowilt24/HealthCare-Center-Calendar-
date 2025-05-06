@@ -1,26 +1,144 @@
-
+/* Estilos generales */
 body {
-    font-family: Poppins;
-    display: flex;
-    flex-direction: row;
-    background: #ffffff;
+    font-family: 'Poppins', Arial, sans-serif;
     margin: 0;
+    padding: 0;
+    display: flex;
     height: 100vh;
+    background: #ffffff;
 }
 
+/* Estilos para la barra lateral */
 .sidebar {
-    width: 20%;
+    width: 250px;
+    background-color: #f5f5f5;
+    border-right: 1px solid #ddd;
+    padding: 15px;
+    box-sizing: border-box;
+    height: 100vh;
+    overflow-y: auto;
 }
 
-main {
-    background: transparent;
-    width: 80%;
-    height: 100%;
+.sidebar h2 {
+    margin-top: 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+    font-size: 18px;
+    color: #333;
 }
 
-.calendario {
+/* Separación entre secciones */
+.sidebar h2:not(:first-child) {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #ddd; /* Línea divisoria visible */
+}
+
+.search-box {
+    width: 91%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Estilo unificado para "View All" y "- All -" */
+.view-all, .dropdown select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.view-all {
+    display: block;
+    box-sizing: border-box;
+    text-align: center;
+    background-color: #f8f8f8;
+}
+
+.view-all:hover {
+    background-color: #e1e9f5;
+}
+
+.category {
+    margin-bottom: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+/* Triángulos para las categorías */
+.category i {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 6px solid #555;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    margin-right: 8px;
+    transition: transform 0.3s;
+}
+
+.category.expanded i {
+    transform: rotate(90deg);
+}
+
+.subcategory {
+    padding-left: 20px;
+    display: none;
+}
+
+.subcategory.visible {
+    display: block;
+}
+
+.subcategory div {
+    padding: 5px 0;
+    cursor: pointer;
+}
+
+.subcategory div:hover {
+    color: #0066cc;
+}
+
+.patient-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.patient-item {
+    padding: 8px 5px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.patient-item:hover {
+    background-color: #f0f0f0;
+}
+
+.patient-item.selected {
+    background-color: #e1e9f5;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* Estilos para el contenido principal y calendario */
+.main {
+    flex: 1;
     background: transparent;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 nav {
@@ -28,16 +146,32 @@ nav {
 }
 
 .mes {
-    width: 200px;
+    display: flex;
+    align-items: center;
     background: transparent;
     color: #000;
-    text-align: center;
-    font-size: 30px;
+    font-size: 18px;
     font-weight: 500;
+    padding: 10px 0;
 }
 
-.mes span {
-    font-weight: 400;
+.mes h2 {
+    margin: 0;
+    margin-right: 15px;
+}
+
+.mes select {
+    padding: 5px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.calendario {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
 }
 
 .dias-semana, .dias {
@@ -45,14 +179,18 @@ nav {
     grid-template-columns: repeat(7, 1fr);
 }
 
-.dias-semana div, .dias div {
+.dias-semana div {
     padding: 10px;
     text-align: center;
+    font-weight: bold;
     border: 1px solid #ddd;
+    background-color: #f0f0f0;
 }
 
 .dias {
-    height: 100%;
+    flex: 1;
+    display: grid;
+    grid-template-rows: repeat(auto-fill, minmax(80px, 1fr));
 }
 
 .dias div {
@@ -65,7 +203,24 @@ nav {
     color: #777;
 }
 
-.vacio {
+.dias div.vacio {
     background: #f9f9f9;
-    border: none;
+    color: #ccc;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        max-height: 30vh;
+    }
+
+    .main {
+        width: 100%;
+    }
 }
