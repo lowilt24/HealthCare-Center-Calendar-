@@ -11,9 +11,12 @@
     <script defer src="../js/calendar.js"></script> 
 </head>
 <body>
+    <!--the part in the left-->
     <div class="sidebar">
         <h2>Doctors</h2>
-        <input type="text" class="search-box" placeholder="Search Doctors...">
+        <!--to search doctors by id an show their appointments on the calendar-->
+        <input type="text" class="search-box" placeholder="Search Doctors by ID...">
+        <!--to filter on the calendar the appoints who appointment reason will be x category-->
         <div class="dropdown">
             <select id="therapist-filter">
                 <option selected>View All</option>
@@ -23,45 +26,20 @@
             </select>
         </div>
 
-        <div class="category">
-        </div>
-        <div class="subcategory">
-            <!-- Therapists will be added here dynamically -->
-        </div>
+        <h2>Patients</h2>   
+        <!--to search patients by ID-->
+        <input type="text" class="search-box" placeholder="Search Patients by ID...">
+        <!--the button to launch the patient data on the input above in a pop-up window-->
+        <button onclick="abrirmodal()">Open paciente details</button>
+        <!--the pop-window hinding until its called-->
+        <div class="modal-overlay" id="modaloverlay">
+            <div class="modal">
+                <span class="close-btn" onclick="cerrarmodal()">&times;</span>
+                <!--the html who contain the pacient data-->
+                <iframe src="pacientdata.html"></iframe>
+            </div>
 
-        <div class="category">
         </div>
-        <div class="subcategory">
-            <!-- Therapists will be added here dynamically -->
-        </div>
-
-        <div class="category expanded">
-        </div>
-        <div class="subcategory visible">
-            <div class="Dermatology">Almond, Dana</div>
-            <div>garcia, ray</div>
-            <div>Orr, Amy</div>
-            <div>Therapist, Steffi</div>
-        </div>
-
-        <h2>Patients</h2>
-        <input type="text" class="search-box" placeholder="Search Patients...">
-        <div class="dropdown">
-            <select>
-                <option>- All -</option>
-                <!-- Additional options can be added here -->
-            </select>
-        </div>
-
-        <ul class="patient-list">
-            <li class="patient-item selected">Ace, Sample</li>
-            <li class="patient-item">Albertson, Daniel S.</li>
-            <li class="patient-item">Allen, John</li>
-            <li class="patient-item">Amsted, Amy</li>
-            <li class="patient-item">Anderson, Stanley</li>
-            <li class="patient-item">Aniston, Jennifer L.</li>
-            <li class="patient-item">Apple, Fred</li>
-        </ul>
     </div>
 
     <main class="main">
@@ -89,6 +67,57 @@
             </div>
         </div>
     </main>
+<!-- Modal para agregar citas -->
+<div class="modal-overlay" id="appointmentModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3>Añadir Cita</h3>
+            <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="appointmentForm">
+                <div class="form-group">
+                    <label for="appointmentDate">Fecha:</label>
+                    <input type="date" id="appointmentDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="appointmentStartTime">Hora de inicio:</label>
+                    <input type="time" id="appointmentStartTime" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="appointmentEndTime">Hora de finalización:</label>
+                    <input type="time" id="appointmentEndTime" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="appointmentDoctor">Doctor:</label>
+                    <select id="appointmentDoctor" required>
+                        <!-- Se llenará dinámicamente con JavaScript -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="appointmentPatient">Paciente:</label>
+                    <select id="appointmentPatient" required>
+                        <!-- Se llenará dinámicamente con JavaScript -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="appointmentNotes">Notas:</label>
+                    <textarea id="appointmentNotes" rows="3"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn">Cancelar</button>
+                    <button type="submit" class="save-btn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

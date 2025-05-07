@@ -105,24 +105,8 @@ body {
     color: #0066cc;
 }
 
-.patient-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.patient-item {
-    padding: 8px 5px;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-}
-
 .patient-item:hover {
     background-color: #f0f0f0;
-}
-
-.patient-item.selected {
-    background-color: #e1e9f5;
 }
 
 .dropdown {
@@ -229,4 +213,202 @@ nav .addEvent {
     .main {
         width: 100%;
     }
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+    background: white;
+    width: 80%;
+    height: 80%;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    color: red;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Estilos para el modal de citas */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-container {
+    background-color: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #0C41FF;
+    color: white;
+}
+
+.modal-header h3 {
+    margin: 0;
+}
+
+.close-modal {
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.cancel-btn, .save-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+.cancel-btn {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.save-btn {
+    background-color: #0C41FF;
+    color: white;
+}
+
+/* Estilos para el botón de añadir cita */
+.AddEvent {
+    background-color: #0C41FF;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 20px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Estilos para las citas en el calendario */
+.appointment {
+    background-color: #e1e9f5;
+    border-left: 3px solid #0C41FF;
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.appointment-time {
+    font-weight: bold;
+    color: #0C41FF;
+}
+
+.appointment-info {
+    color: #333;
+}
+
+/* Mejoras para los días del calendario */
+.days div {
+    position: relative;
+    padding-top: 25px;
+    overflow-y: auto;
+    max-height: 120px;
+}
+
+.days div .day-number {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Colorear el día actual */
+.days div.today {
+    background-color: #f0f7ff;
+}
+
+/* Días con citas */
+.days div.has-appointments {
+    position: relative;
+}
+
+.days div.has-appointments::after {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    background-color: #0C41FF;
+    border-radius: 50%;
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
