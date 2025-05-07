@@ -1,10 +1,10 @@
-const diasContainer = document.getElementById("dias");
-const mesSelect = document.getElementById("mes-select");
-const anioSelect = document.getElementById("anio-select");
+const daysContainer = document.getElementById("days");
+const monthSelect = document.getElementById("month-select");
+const yearSelect = document.getElementById("year-select");
 
-const nombresMeses = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+const monthNames = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
 ];
 // Esperar a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', function() {
@@ -76,62 +76,62 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 // Llenar selectores de mes y año
-function llenarSelectores() {
-  nombresMeses.forEach((nombre, index) => {
+function fillSelectors() {
+  monthNames.forEach((name, index) => {
     const option = document.createElement("option");
     option.value = index;
-    option.textContent = nombre;
-    mesSelect.appendChild(option);
+    option.textContent = name;
+    monthSelect.appendChild(option);
   });
 
-  const anioActual = new Date().getFullYear();
-  for (let y = anioActual - 5; y <= anioActual + 10; y++) {
+  const currentYear = new Date().getFullYear();
+  for (let y = currentYear - 5; y <= currentYear + 10; y++) {
     const option = document.createElement("option");
     option.value = y;
     option.textContent = y;
-    anioSelect.appendChild(option);
+    yearSelect.appendChild(option);
   }
 
   // Establecer mes y año actuales como seleccionados
-  mesSelect.value = new Date().getMonth();
-  anioSelect.value = new Date().getFullYear();
+  monthSelect.value = new Date().getMonth();
+  yearSelect.value = new Date().getFullYear();
 }
 
-function generarDias(mes, anio) {
-  diasContainer.innerHTML = "";
+function generateDays(month, year) {
+  daysContainer.innerHTML = "";
 
-  const primerDia = new Date(anio, mes, 1);
-  const ultimoDia = new Date(anio, mes + 1, 0).getDate();
-  let diaInicio = primerDia.getDay(); // 0 = domingo
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  let startDay = firstDay.getDay(); // 0 = domingo
 
   // Ajustar si quieres que la semana inicie en lunes
 
   // Celdas vacías antes del día 1
-  for (let i = 0; i < diaInicio; i++) {
+  for (let i = 0; i < startDay; i++) {
     const div = document.createElement("div");
-    div.classList.add("vacio");
-    diasContainer.appendChild(div);
+    div.classList.add("empty");
+    daysContainer.appendChild(div);
   }
 
   // Días del mes
-  for (let dia = 1; dia <= ultimoDia; dia++) {
+  for (let day = 1; day <= lastDay; day++) {
     const div = document.createElement("div");
-    div.textContent = dia
+    div.textContent = day
 
-    diasContainer.appendChild(div);
+    daysContainer.appendChild(div);
   }
 }
 
 // Event listeners
-mesSelect.addEventListener("change", actualizarCalendario);
-anioSelect.addEventListener("change", actualizarCalendario);
+monthSelect.addEventListener("change", updateCalendar);
+yearSelect.addEventListener("change", updateCalendar);
 
-function actualizarCalendario() {
-  const mes = parseInt(mesSelect.value);
-  const anio = parseInt(anioSelect.value);
-  generarDias(mes, anio);
+function updateCalendar() {
+  const month = parseInt(monthSelect.value);
+  const year = parseInt(yearSelect.value);
+  generateDays(month, year);
 }
 
 // Inicializar
-llenarSelectores();
-actualizarCalendario();
+fillSelectors();
+updateCalendar();

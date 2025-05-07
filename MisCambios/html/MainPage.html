@@ -6,9 +6,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario</title>
+    <title>Calendar</title>
     <link rel="stylesheet" href="../css/MainPgeStyle.css">
-    <script defer src="../js/calendario.js"></script>
+    <script defer src="../js/calendar.js"></script> 
 </head>
 <body>
 <div class="sidebar">
@@ -66,15 +66,15 @@
 
 <main class="main">
     <nav>
-        <div class="mes">
+        <div class="month">
             <h2>April</h2>
-            <select id="mes-select"></select>
-            <select id="anio-select"></select>
+            <select id="month-select"></select>
+            <select id="year-select"></select>
         </div>
     </nav>
 
-    <div class="calendario">
-        <div class="dias-semana">
+    <div class="calendar">
+        <div class="week-days">
             <div>Sun</div>
             <div>Mon</div>
             <div>Tue</div>
@@ -83,12 +83,11 @@
             <div>Fri</div>
             <div>Sat</div>
         </div>
-        <div class="dias" id="dias">
+        <div class="days" id="days">
             <!-- Los días se generarán dinámicamente con JavaScript -->
         </div>
     </div>
 </main>
 
-<script src="script.js"></script>
 </body>
 </html>
