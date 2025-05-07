@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Implementar la búsqueda de terapeutas
-  document.querySelector('input[placeholder="Search Therapists..."]').addEventListener('input', function() {
+  document.querySelector('input[placeholder="Search Doctors..."]').addEventListener('input', function() {
     let searchTerm = this.value.toLowerCase();
     document.querySelectorAll('.subcategory div').forEach(therapist => {
       let name = therapist.textContent.toLowerCase();

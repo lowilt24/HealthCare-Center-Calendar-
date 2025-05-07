@@ -143,9 +143,15 @@ body {
 
 nav {
     padding: 15px;
+    display: flex;
+    flex-direction: row;
 }
 
-.month {
+nav .addEvent {
+    margin-left: 200px;
+}
+
+.date {
     display: flex;
     align-items: center;
     background: transparent;
@@ -155,15 +161,14 @@ nav {
     padding: 10px 0;
 }
 
-.month h2 {
-    margin: 0;
-    margin-right: 15px;
-}
 
-.month select {
+.date select {
+    background-color: #fff;
+    color: #0C41FF;
+    font-size: 18px;
     padding: 5px;
     margin-right: 10px;
-    border: 1px solid #ccc;
+    border: none;
     border-radius: 4px;
 }
 
@@ -180,17 +185,18 @@ nav {
 }
 
 .week-days div {
+    background-color: #0C41FF;
+    color: #fff;
     padding: 10px;
     text-align: center;
     font-weight: bold;
     border: 1px solid #ddd;
-    background-color: #f0f0f0;
 }
 
 .days {
     flex: 1;
     display: grid;
-    grid-template-rows: repeat(auto-fill, minmax(80px, 1fr));
+    grid-template-columns: repeat(7,1fr);
 }
 
 .days div {
