@@ -1,4 +1,4 @@
-/* Estilos generales */
+/* general style */
 body {
     font-family: 'Poppins', Arial, sans-serif;
     margin: 0;
@@ -8,7 +8,7 @@ body {
     background: #ffffff;
 }
 
-/* Estilos para la barra lateral */
+/* side bar style */
 .sidebar {
     width: 250px;
     background-color: #f5f5f5;
@@ -27,13 +27,14 @@ body {
     color: #333;
 }
 
-/* Separación entre secciones */
+/* separation between sections */
 .sidebar h2:not(:first-child) {
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 2px solid #ddd; /* Línea divisoria visible */
+    border-top: 2px solid #ddd; /* divided line*/
 }
 
+/*styles for the search boxes*/
 .search-box {
     width: 91%;
     padding: 8px;
@@ -42,7 +43,7 @@ body {
     border-radius: 4px;
 }
 
-/* Estilo unificado para "View All" y "- All -" */
+/* unified style for  "View All" and "- All -" */
 .view-all, .dropdown select {
     width: 100%;
     padding: 8px;
@@ -87,6 +88,7 @@ body {
     transform: rotate(90deg);
 }
 
+/*styles for subcategories*/
 .subcategory {
     padding-left: 20px;
     display: none;
@@ -227,8 +229,8 @@ nav .addEvent {
 
 .modal {
     background: white;
-    width: 80%;
-    height: 80%;
+    width: 30%;
+    height: 90%;
     border-radius: 8px;
     overflow: hidden;
     position: relative;
@@ -412,3 +414,20 @@ iframe {
     top: 10px;
     right: 10px;
 }
+
+.goback{
+    display: flex;
+    cursor:pointer;
+    background-color:#0C41FF;
+    color:white;
+    display:inline-block;
+    padding: 6px 8px;
+    border-radius: 8px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+

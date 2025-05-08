@@ -1,3 +1,4 @@
+//function to toggle the icon to reveal or hide the passwords
 const btn = document.querySelectorAll(".fa-eye.icono").forEach(icon =>{
     icon.addEventListener('click',()=>{
         const inputid = icon.dataset.target;
@@ -15,6 +16,8 @@ const btn = document.querySelectorAll(".fa-eye.icono").forEach(icon =>{
     })
 })
 
+
+//function to check if passwords match
 document.getElementById("form").addEventListener("submit",function(event){
     const pass1 = document.getElementById("pass1").value;
     const pass2 = document.getElementById("pass2").value;

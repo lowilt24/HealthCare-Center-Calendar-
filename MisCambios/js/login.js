@@ -11,3 +11,4 @@ btn.addEventListener("click",()=>{
         btn.classList.replace("fa-eye-slash","fa-eye");
     }
 })
+//script to toggle the icon to hode or reveal the password

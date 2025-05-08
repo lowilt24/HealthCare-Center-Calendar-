@@ -41,17 +41,24 @@
 
         </div>
     </div>
-
+    <!--the upper part of the page-->
     <main class="main">
-        <nav>
+        <nav class="navbar">
+            <!--to select date-->
             <div class="date">
                 <select id="month-select"></select>
                 <select id="year-select"></select>
+                <!--button to add appointment-->
                 <button class="AddEvent">Add Appointment</button>
             </div>
-            
+            <!--exit button-->
+            <a href="Login.html">
+                <div class="goback">
+                    exit
+                </div>
+            </a>
         </nav>
-
+        <!--calendar-->
         <div class="calendar">
             <div class="week-days">
                 <div>Sun</div>
@@ -67,14 +74,15 @@
             </div>
         </div>
     </main>
-<!-- Modal para agregar citas -->
+<!-- Modal to add appointments-->
 <div class="modal-overlay" id="appointmentModal">
     <div class="modal-container">
         <div class="modal-header">
-            <h3>Añadir Cita</h3>
+            <h3>Add appointment</h3>
             <span class="close-modal">&times;</span>
         </div>
         <div class="modal-body">
+            <!--form of the appointment-->
             <form id="appointmentForm">
                 <div class="form-group">
                     <label for="appointmentDate">Fecha:</label>
@@ -109,7 +117,7 @@
                     <label for="appointmentNotes">Notas:</label>
                     <textarea id="appointmentNotes" rows="3"></textarea>
                 </div>
-                
+                <!--to confirm or cancel the new appointment-->
                 <div class="form-actions">
                     <button type="button" class="cancel-btn">Cancelar</button>
                     <button type="submit" class="save-btn">Guardar</button>

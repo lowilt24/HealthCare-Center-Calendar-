@@ -6,75 +6,7 @@ const monthNames = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
-// Esperar a que el DOM esté completamente cargado
-document.addEventListener('DOMContentLoaded', function() {
-  // Añadir funcionalidad para expandir/colapsar categorías
-  document.getElementById('therapist-filter').addEventListener('change', function() {
-    if (this.value === 'View All') {
-      // Mostrar todas las categorías expandidas
-      document.querySelectorAll('.category').forEach(cat => {
-        cat.classList.add('expanded');
-      });
 
-      document.querySelectorAll('.subcategory').forEach(subcat => {
-        subcat.classList.add('visible');
-      });
-    }
-    // Aquí se pueden añadir más condiciones si se añaden más opciones al select
-  });
-
-  // Funcionalidad para seleccionar pacientes
-  document.querySelectorAll('.patient-item').forEach(patient => {
-    patient.addEventListener('click', function() {
-      document.querySelectorAll('.patient-item').forEach(p => {
-        p.classList.remove('selected');
-      });
-      this.classList.add('selected');
-    });
-  });
-
-  // Implementar la búsqueda de terapeutas
-  document.querySelector('input[placeholder="Search Doctors..."]').addEventListener('input', function() {
-    let searchTerm = this.value.toLowerCase();
-    document.querySelectorAll('.subcategory div').forEach(therapist => {
-      let name = therapist.textContent.toLowerCase();
-      if (name.includes(searchTerm)) {
-        therapist.style.display = 'block';
-        // Asegurarse de que la categoría padre esté expandida
-        let category = therapist.parentElement.previousElementSibling;
-        category.classList.add('expanded');
-        therapist.parentElement.classList.add('visible');
-      } else {
-        therapist.style.display = 'none';
-      }
-    });
-  });
-
-  // Implementar la búsqueda de pacientes
-  document.querySelector('input[placeholder="Search Patients..."]').addEventListener('input', function() {
-    let searchTerm = this.value.toLowerCase();
-    document.querySelectorAll('.patient-item').forEach(patient => {
-      let name = patient.textContent.toLowerCase();
-      if (name.includes(searchTerm)) {
-        patient.style.display = 'block';
-      } else {
-        patient.style.display = 'none';
-      }
-    });
-  });
-
-  // Funcionalidad para el botón "View All"
-  document.querySelector('.view-all').addEventListener('click', function() {
-    // Mostrar todas las categorías expandidas
-    document.querySelectorAll('.category').forEach(cat => {
-      cat.classList.add('expanded');
-    });
-
-    document.querySelectorAll('.subcategory').forEach(subcat => {
-      subcat.classList.add('visible');
-    });
-  });
-});
 // Llenar selectores de mes y año
 function fillSelectors() {
   monthNames.forEach((name, index) => {
@@ -97,6 +29,7 @@ function fillSelectors() {
   yearSelect.value = new Date().getFullYear();
 }
 
+//conseguir primer y ultimo dia del mes
 function generateDays(month, year) {
   daysContainer.innerHTML = "";
 
