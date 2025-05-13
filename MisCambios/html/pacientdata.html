@@ -1,15 +1,206 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Detalles del Usuario</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Details</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    .header h1 {
+      color: #2c3e50;
+      font-size: 28px;
+      margin: 0;
+    }
+    .user-avatar {
+      width: 100px;
+      height: 100px;
+      background-color: #3498db;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: white;
+      font-size: 36px;
+      font-weight: bold;
+    }
+    .user-details {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+    .detail-card {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .detail-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      background-color: #e8f4fd;
+    }
+    .icon {
+      width: 40px;
+      height: 40px;
+      background-color: #3498db;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      color: white;
+      font-size: 18px;
+    }
+    .detail-info {
+      flex: 1;
+    }
+    .detail-label {
+      font-size: 14px;
+      color: #7f8c8d;
+      margin: 0;
+    }
+    .detail-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin: 5px 0 0;
+    }
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #95a5a6;
+    }
+    @media (min-width: 600px) {
+      .user-details {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!--body of the pop up to place data-->
-  <h2>Información del Usuario</h2>
-  <p>Nombre: Juan Pérez</p>
-  <p>Email: juanperez@example.com</p>
-  <p>Teléfono: +34 123 456 789</p>
-  <p>Ocupación: Ingeniero de Software</p>
+  <div class="container">
+    <div class="header">
+      <div class="user-avatar">JP</div>
+      <h1>User Profile</h1>
+    </div>
+    
+    <div class="user-details">
+      <!-- ID -->
+      <div class="detail-card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="7" y1="10" x2="17" y2="10"></line>
+          </svg>
+        </div>
+        <div class="detail-info">
+          <p class="detail-label">ID</p>
+          <p class="detail-value">PAT-2025-0438</p>
+        </div>
+      </div>
+      
+      <!-- Name -->
+      <div class="detail-card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <div class="detail-info">
+          <p class="detail-label">Name</p>
+          <p class="detail-value">John Smith</p>
+        </div>
+      </div>
+      
+      <!-- Email -->
+      <div class="detail-card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+        </div>
+        <div class="detail-info">
+          <p class="detail-label">Email</p>
+          <p class="detail-value">johnsmith@example.com</p>
+        </div>
+      </div>
+      
+      <!-- Phone -->
+      <div class="detail-card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+          </svg>
+        </div>
+        <div class="detail-info">
+          <p class="detail-label">Phone</p>
+          <p class="detail-value">+1 123 456 7890</p>
+        </div>
+      </div>
+      
+      <!-- Occupation -->
+      <div class="detail-card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+        </div>
+        <div class="detail-info">
+          <p class="detail-label">Occupation</p>
+          <p class="detail-value">Software Engineer</p>
+        </div>
+      </div>
+      
+      <!-- Next Appointment -->
+      <div class="detail-card">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </div>
+        <div class="detail-info">
+          <p class="detail-label">Next Appointment</p>
+          <p class="detail-value">May 15, 2025 - 10:30 AM</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>Last updated: May 12, 2025</p>
+    </div>
+  </div>
 </body>
 </html>

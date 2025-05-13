@@ -431,3 +431,12 @@ iframe {
     align-items: center;
 }
 
+.opendata{
+    display: flex;
+    cursor:pointer;
+    background-color:#0C41FF;
+    color:white;
+    display:inline-block;
+    padding: 6px 8px;
+    border-radius: 8px;
+}
