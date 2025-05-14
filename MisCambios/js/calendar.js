@@ -1,246 +1,411 @@
+// Estructura de datos principal
+let doctors = [];
+let patients = [];
+let appointments = [];
+
+// Referencias de elementos DOM
 const daysContainer = document.getElementById("days");
 const monthSelect = document.getElementById("month-select");
 const yearSelect = document.getElementById("year-select");
-
-const monthNames = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
-
-// Llenar selectores de mes y año
-function fillSelectors() {
-  monthNames.forEach((name, index) => {
-    const option = document.createElement("option");
-    option.value = index;
-    option.textContent = name;
-    monthSelect.appendChild(option);
-  });
-
-  const currentYear = new Date().getFullYear();
-  for (let y = currentYear - 5; y <= currentYear + 10; y++) {
-    const option = document.createElement("option");
-    option.value = y;
-    option.textContent = y;
-    yearSelect.appendChild(option);
-  }
-
-  // Establecer mes y año actuales como seleccionados
-  monthSelect.value = new Date().getMonth();
-  yearSelect.value = new Date().getFullYear();
-}
-
-//conseguir primer y ultimo dia del mes
-function generateDays(month, year) {
-  daysContainer.innerHTML = "";
-
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0).getDate();
-  let startDay = firstDay.getDay(); // 0 = domingo
-
-  // Ajustar si quieres que la semana inicie en lunes
-
-  // Celdas vacías antes del día 1
-  for (let i = 0; i < startDay; i++) {
-    const div = document.createElement("div");
-    div.classList.add("empty");
-    daysContainer.appendChild(div);
-  }
-
-  // Días del mes
-  for (let day = 1; day <= lastDay; day++) {
-    const div = document.createElement("div");
-    div.textContent = day
-
-    daysContainer.appendChild(div);
-  }
-}
-
-// Event listeners
-monthSelect.addEventListener("change", updateCalendar);
-yearSelect.addEventListener("change", updateCalendar);
-
-function updateCalendar() {
-  const month = parseInt(monthSelect.value);
-  const year = parseInt(yearSelect.value);
-  generateDays(month, year);
-}
-
-function abrirmodal(){
-  document.getElementById('modaloverlay').style.display = 'flex';
-}
-function cerrarmodal(){
-  document.getElementById('modaloverlay').style.display = 'none';
-}
-
-// Estructura para almacenar citas
-let appointments = [];
-
-// Referencia al modal y elementos relacionados
 const appointmentModal = document.getElementById('appointmentModal');
 const appointmentForm = document.getElementById('appointmentForm');
-const addEventButton = document.querySelector('.AddEvent');
-const closeModalButton = document.querySelector('.close-modal');
-const cancelButton = document.querySelector('.cancel-btn');
+const therapistFilter = document.getElementById('therapist-filter');
 
-// Eventos para abrir y cerrar el modal
-addEventButton.addEventListener('click', openAppointmentModal);
-closeModalButton.addEventListener('click', closeAppointmentModal);
-cancelButton.addEventListener('click', closeAppointmentModal);
+// Nombres de los meses
+const monthNames = ["January", "February", "March", "April", "May", "June", 
+                    "July", "August", "September", "October", "November", "December"];
 
-// Función para abrir el modal
-function openAppointmentModal() {
-    // Establecer la fecha por defecto como la fecha actual
-    const today = new Date();
-    const formattedDate = formatDateForInput(today);
-    document.getElementById('appointmentDate').value = formattedDate;
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    initCalendar();
+    loadData();
+    setupEventListeners();
+    updateCalendar();
     
-    // Llenar los select de doctores y pacientes
+    // Comentar/descomentar la siguiente línea para agregar datos de muestra
+    // if (doctors.length === 0 && patients.length === 0) addSampleData();
+});
+
+// Configurar listeners de eventos
+function setupEventListeners() {
+    // Eventos del calendario
+    monthSelect.addEventListener("change", updateCalendar);
+    yearSelect.addEventListener("change", updateCalendar);
+    
+    // Eventos del modal de citas
+    document.querySelector('.AddEvent').addEventListener('click', openAppointmentModal);
+    document.querySelector('.close-modal').addEventListener('click', closeAppointmentModal);
+    document.querySelector('.cancel-btn').addEventListener('click', closeAppointmentModal);
+    
+    // Eventos del modal de pacientes
+    document.querySelector('.opendata').addEventListener('click', function() {
+        document.getElementById('modaloverlay').style.display = 'flex';
+    });
+    document.querySelector('.close-btn').addEventListener('click', function() {
+        document.getElementById('modaloverlay').style.display = 'none';
+    });
+    
+    // Filtro de terapistas/especialidades
+    therapistFilter.addEventListener('change', function() {
+        // Filtrar citas por especialidad seleccionada
+        updateCalendar();
+    });
+    
+    // Guardar cita
+    appointmentForm.addEventListener('submit', saveAppointment);
+}
+
+// Inicializar el calendario
+function initCalendar() {
+    // Llenar selectores de mes y año
+    monthNames.forEach((name, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = name;
+        monthSelect.appendChild(option);
+    });
+
+    const currentYear = new Date().getFullYear();
+    for (let y = currentYear - 5; y <= currentYear + 10; y++) {
+        yearSelect.appendChild(createOption(y, y));
+    }
+
+    // Establecer valores iniciales
+    monthSelect.value = new Date().getMonth();
+    yearSelect.value = currentYear;
+}
+
+// Funciones para doctores
+function addDoctor(id, name, specialty) {
+    // Evitar duplicados
+    if (doctors.some(doc => doc.id === id)) {
+        console.warn(`Doctor con ID ${id} ya existe`);
+        return false;
+    }
+    
+    doctors.push({ id, name, specialty });
+    localStorage.setItem('doctors', JSON.stringify(doctors));
+    updateDoctorsList();
+    return true;
+}
+
+function updateDoctorsList() {
+    // Primero actualizar el selector de especialidades
+    if (therapistFilter) {
+        // Mantener la opción "View All"
+        while (therapistFilter.options.length > 1) {
+            therapistFilter.remove(1);
+        }
+        
+        // Obtener especialidades únicas
+        const specialties = [...new Set(doctors.map(doc => doc.specialty))];
+        
+        // Agregar especialidades al filtro
+        specialties.forEach(specialty => {
+            const option = document.createElement('option');
+            option.value = specialty;
+            option.textContent = specialty;
+            option.className = 'speciality';
+            therapistFilter.appendChild(option);
+        });
+    }
+    
+    // Crear contenedor de doctores en la sidebar si no existe
+    let doctorContainer = document.querySelector('.doctor-container');
+    if (!doctorContainer) {
+        doctorContainer = document.createElement('div');
+        doctorContainer.className = 'doctor-container';
+        
+        // Insertar después del filtro de terapeutas
+        if (therapistFilter) {
+            therapistFilter.parentNode.insertBefore(doctorContainer, therapistFilter.nextSibling);
+        } else {
+            // Fallback: insertar después del primer h2 en la sidebar
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                const firstH2 = sidebar.querySelector('h2');
+                if (firstH2) {
+                    sidebar.insertBefore(doctorContainer, firstH2.nextSibling.nextSibling.nextSibling);
+                }
+            }
+        }
+    }
+    
+    // Limpiar contenedor
+    doctorContainer.innerHTML = '';
+    
+    // Agrupar médicos por especialidad
+    const doctorsBySpecialty = {};
+    doctors.forEach(doctor => {
+        if (!doctorsBySpecialty[doctor.specialty]) {
+            doctorsBySpecialty[doctor.specialty] = [];
+        }
+        doctorsBySpecialty[doctor.specialty].push(doctor);
+    });
+    
+    // Crear elementos en la interfaz
+    Object.keys(doctorsBySpecialty).forEach(specialty => {
+        // Crear elemento para la especialidad
+        const specialtyDiv = document.createElement('div');
+        specialtyDiv.className = 'category expanded';
+        specialtyDiv.innerHTML = `<i></i>${specialty}`;
+        doctorContainer.appendChild(specialtyDiv);
+        
+        // Crear subcategoría para los doctores
+        const subcategoryDiv = document.createElement('div');
+        subcategoryDiv.className = 'subcategory visible';
+        
+        // Añadir cada doctor
+        doctorsBySpecialty[specialty].forEach(doctor => {
+            const doctorDiv = document.createElement('div');
+            doctorDiv.textContent = doctor.name;
+            doctorDiv.setAttribute('data-id', doctor.id);
+            subcategoryDiv.appendChild(doctorDiv);
+        });
+        
+        doctorContainer.appendChild(subcategoryDiv);
+    });
+    
+    // Actualizar el select de doctores en el modal
+    fillDoctorsSelect();
+}
+
+// Funciones para pacientes
+function addPatient(id, name, email, phone, birthDate, additionalInfo = {}) {
+    // Validar datos básicos
+    if (!id || !name) {
+        console.error("Error: ID y nombre son campos obligatorios para agregar un paciente");
+        return false;
+    }
+    
+    // Verificar que el ID no esté duplicado
+    if (patients.some(patient => patient.id === id)) {
+        console.error(`Error: Ya existe un paciente con el ID ${id}`);
+        return false;
+    }
+    
+    // Formatear fecha de nacimiento si es string
+    let formattedBirthDate = birthDate;
+    if (typeof birthDate === 'string') {
+        formattedBirthDate = new Date(birthDate);
+    }
+    
+    // Calcular edad basada en la fecha de nacimiento
+    const age = formattedBirthDate ? calculateAge(formattedBirthDate) : null;
+    
+    // Crear objeto paciente
+    const newPatient = {
+        id: id,
+        name: name,
+        email: email || '',
+        phone: phone || '',
+        birthDate: formattedBirthDate ? formattedBirthDate.toISOString().split('T')[0] : '',
+        age: age,
+        createdAt: new Date().toISOString(),
+        ...additionalInfo // Spread para incluir información adicional
+    };
+    
+    // Agregar al array de pacientes
+    patients.push(newPatient);
+    
+    // Guardar en localStorage para persistencia
+    savePatients();
+    
+    // Actualizar la interfaz si es necesario
+    updatePatientsList();
+    
+    console.log(`Paciente ${name} (ID: ${id}) agregado correctamente`);
+    return true;
+}
+
+function calculateAge(birthDate) {
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+    return age;
+}
+
+function updatePatientsList() {
+    // Crear contenedor para pacientes en la sidebar
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+    
+    // Buscar el encabezado de pacientes
+    const patientHeaderElements = Array.from(sidebar.querySelectorAll('h2'));
+    const patientHeader = patientHeaderElements.find(el => el.textContent === 'Patients');
+    
+    if (!patientHeader) return;
+    
+    // Crear o actualizar el contenedor de pacientes
+    let patientContainer = document.querySelector('.patient-container');
+    
+    if (!patientContainer) {
+        patientContainer = document.createElement('div');
+        patientContainer.className = 'patient-container';
+        
+        // Insertar después del botón "Open pacient details"
+        const openDataBtn = sidebar.querySelector('.opendata');
+        if (openDataBtn) {
+            sidebar.insertBefore(patientContainer, openDataBtn.nextSibling);
+        } else {
+            // Fallback: insertar después del segundo input
+            const inputs = sidebar.querySelectorAll('input');
+            if (inputs.length >= 2) {
+                sidebar.insertBefore(patientContainer, inputs[1].nextSibling.nextSibling);
+            }
+        }
+    }
+    
+    // Limpiar contenido existente
+    patientContainer.innerHTML = '';
+    
+    // Agregar cada paciente a la lista
+    patients.forEach(patient => {
+        const patientDiv = document.createElement('div');
+        patientDiv.className = 'patient-item';
+        patientDiv.setAttribute('data-id', patient.id);
+        patientDiv.textContent = patient.name;
+        
+        // Opcional: Agregar evento click para seleccionar paciente
+        patientDiv.addEventListener('click', function() {
+            document.querySelectorAll('.patient-item').forEach(p => {
+                p.classList.remove('selected');
+            });
+            this.classList.add('selected');
+            
+            // Mostrar ID del paciente en el input de búsqueda
+            const searchBox = sidebar.querySelectorAll('.search-box')[1];
+            if (searchBox) {
+                searchBox.value = patient.id;
+            }
+        });
+        
+        patientContainer.appendChild(patientDiv);
+    });
+    
+    // Actualizar también el select de pacientes en el modal de citas
+    fillPatientsSelect();
+}
+
+function getPatientById(id) {
+    return patients.find(patient => patient.id === id) || null;
+}
+
+function removePatient(id) {
+    const initialLength = patients.length;
+    patients = patients.filter(patient => patient.id !== id);
+    
+    if (patients.length < initialLength) {
+        savePatients();
+        updatePatientsList();
+        console.log(`Paciente con ID ${id} eliminado correctamente`);
+        return true;
+    }
+    
+    console.error(`No se encontró paciente con ID ${id}`);
+    return false;
+}
+
+function savePatients() {
+    localStorage.setItem('calendarPatients', JSON.stringify(patients));
+}
+function openAppointmentModal() {
+    document.getElementById('appointmentDate').value = formatDateForInput(new Date());
     fillDoctorsSelect();
     fillPatientsSelect();
-    
     appointmentModal.style.display = 'flex';
 }
 
-// Función para cerrar el modal
 function closeAppointmentModal() {
     appointmentModal.style.display = 'none';
     appointmentForm.reset();
 }
 
-// Función para llenar el select de doctores
-function fillDoctorsSelect() {
-    const doctorSelect = document.getElementById('appointmentDoctor');
-    doctorSelect.innerHTML = '<option value="">Seleccione un doctor</option>';
-    
-    // Obtener todos los doctores de la sidebar
-    const doctors = [];
-    document.querySelectorAll('.subcategory div').forEach(doctorElement => {
-        if (doctorElement.style.display !== 'none') {
-            doctors.push({
-                name: doctorElement.textContent,
-                category: doctorElement.classList[0] || 'General'
-            });
-        }
-    });
-    
-    // Añadir doctores al select
-    doctors.forEach(doctor => {
-        const option = document.createElement('option');
-        option.value = doctor.name;
-        option.textContent = `${doctor.name} (${doctor.category})`;
-        doctorSelect.appendChild(option);
-    });
-}
-
-// Función para llenar el select de pacientes
-function fillPatientsSelect() {
-    const patientSelect = document.getElementById('appointmentPatient');
-    patientSelect.innerHTML = '<option value="">Seleccione un paciente</option>';
-    
-    // Obtener todos los pacientes de la sidebar
-    const patients = [];
-    document.querySelectorAll('.patient-item').forEach(patientElement => {
-        if (patientElement.style.display !== 'none') {
-            patients.push(patientElement.textContent);
-        }
-    });
-    
-    // Añadir pacientes al select
-    patients.forEach(patient => {
-        const option = document.createElement('option');
-        option.value = patient;
-        option.textContent = patient;
-        patientSelect.appendChild(option);
-    });
-}
-
-// Evento para guardar la cita
-appointmentForm.addEventListener('submit', function(e) {
+function saveAppointment(e) {
     e.preventDefault();
-    
+
     // Recoger datos del formulario
-    const appointmentDate = document.getElementById('appointmentDate').value;
-    const startTime = document.getElementById('appointmentStartTime').value;
-    const endTime = document.getElementById('appointmentEndTime').value;
-    const doctor = document.getElementById('appointmentDoctor').value;
-    const patient = document.getElementById('appointmentPatient').value;
-    const notes = document.getElementById('appointmentNotes').value;
-    
-    // Validar que los campos obligatorios estén completos
-    if (!appointmentDate || !startTime || !endTime || !doctor || !patient) {
+    const formData = {
+        id: Date.now(),
+        date: document.getElementById('appointmentDate').value,
+        startTime: document.getElementById('appointmentStartTime').value,
+        endTime: document.getElementById('appointmentEndTime').value,
+        doctor: document.getElementById('appointmentDoctor').value,
+        patient: document.getElementById('appointmentPatient').value,
+        notes: document.getElementById('appointmentNotes').value
+    };
+
+    // Validar campos obligatorios
+    if (!formData.date || !formData.startTime || !formData.endTime ||
+        !formData.doctor || !formData.patient) {
         alert('Por favor complete todos los campos obligatorios');
         return;
     }
-    
-    // Crear objeto de cita
-    const newAppointment = {
-        id: Date.now(), // ID único basado en timestamp
-        date: appointmentDate,
-        startTime: startTime,
-        endTime: endTime,
-        doctor: doctor,
-        patient: patient,
-        notes: notes
-    };
-    
-    // Añadir a la lista de citas
-    appointments.push(newAppointment);
-    
-    // Guardar en localStorage (opcional)
-    saveAppointments();
-    
-    // Actualizar calendario
+
+    // Guardar cita en sessionStorage instead of localStorage
+    appointments.push(formData);
+    sessionStorage.setItem('calendarAppointments', JSON.stringify(appointments));
+
+    // Actualizar y cerrar
     updateCalendar();
-    
-    // Cerrar modal
     closeAppointmentModal();
-});
-
-// Función para guardar citas en localStorage
-function saveAppointments() {
-    localStorage.setItem('calendarAppointments', JSON.stringify(appointments));
 }
 
-// Función para cargar citas desde localStorage
-function loadAppointments() {
-    const savedAppointments = localStorage.getItem('calendarAppointments');
-    if (savedAppointments) {
-        appointments = JSON.parse(savedAppointments);
+
+// Funciones del calendario
+function initCalendar() {
+    // Llenar selectores de mes y año
+    monthNames.forEach((name, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = name;
+        monthSelect.appendChild(option);
+    });
+
+    const currentYear = new Date().getFullYear();
+    for (let y = currentYear - 5; y <= currentYear + 10; y++) {
+        const option = document.createElement("option");
+        option.value = y;
+        option.textContent = y;
+        yearSelect.appendChild(option);
     }
+
+    // Establecer valores iniciales
+    monthSelect.value = new Date().getMonth();
+    yearSelect.value = currentYear;
 }
 
-// Función para actualizar el calendario existente
 function updateCalendar() {
     const month = parseInt(monthSelect.value);
     const year = parseInt(yearSelect.value);
     
-    // Regenerar los días del calendario
-    generateDays(month, year);
+    // Filtro seleccionado (para filtrar por especialidad)
+    const selectedSpecialty = therapistFilter ? therapistFilter.value : "View All";
     
-    // Añadir las citas a los días correspondientes
-    addAppointmentsToDays(month, year);
+    generateDays(month, year);
+    addAppointmentsToDays(month, year, selectedSpecialty);
 }
 
-// Función modificada para generar días
 function generateDays(month, year) {
     daysContainer.innerHTML = "";
-
+    
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0).getDate();
-    let startDay = firstDay.getDay(); // 0 = domingo
-
-    // Celdas vacías antes del día 1
+    const startDay = firstDay.getDay(); // 0 = Domingo
+    
+    // Celdas vacías iniciales (días de la semana antes del primer día del mes)
     for (let i = 0; i < startDay; i++) {
         const div = document.createElement("div");
         div.classList.add("empty");
         daysContainer.appendChild(div);
     }
-
-    // Obtén la fecha actual para resaltar el día de hoy
+    
+    // Obtener la fecha actual para resaltar el día de hoy
     const today = new Date();
     const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
     const currentDate = today.getDate();
-
+    
     // Días del mes
     for (let day = 1; day <= lastDay; day++) {
         const div = document.createElement("div");
@@ -264,19 +429,27 @@ function generateDays(month, year) {
     }
 }
 
-// Función para añadir citas a los días
-function addAppointmentsToDays(month, year) {
+function addAppointmentsToDays(month, year, selectedSpecialty = "View All") {
     // Agrupar citas por fecha
     const appointmentsByDate = {};
     
     appointments.forEach(appointment => {
         const appointmentDate = new Date(appointment.date);
-        const appointmentMonth = appointmentDate.getMonth();
-        const appointmentYear = appointmentDate.getFullYear();
         
-        // Solo procesar citas del mes y año actual del calendario
-        if (appointmentMonth === month && appointmentYear === year) {
-            const dateStr = formatDate(appointmentYear, appointmentMonth, appointmentDate.getDate());
+        // Solo procesar si la cita es del mes y año actual
+        if (appointmentDate.getMonth() === month && appointmentDate.getFullYear() === year) {
+            // Aplicar filtro por especialidad si es necesario
+            if (selectedSpecialty !== "View All") {
+                // Buscar el doctor de la cita
+                const doctor = doctors.find(doc => doc.id === appointment.doctor || doc.name === appointment.doctor);
+                
+                // Si el doctor no coincide con la especialidad seleccionada, saltamos esta cita
+                if (!doctor || doctor.specialty !== selectedSpecialty) {
+                    return;
+                }
+            }
+            
+            const dateStr = formatDate(year, month, appointmentDate.getDate());
             
             if (!appointmentsByDate[dateStr]) {
                 appointmentsByDate[dateStr] = [];
@@ -286,7 +459,7 @@ function addAppointmentsToDays(month, year) {
         }
     });
     
-    // Añadir citas a los días correspondientes
+    // Añadir citas a los días
     Object.keys(appointmentsByDate).forEach(dateStr => {
         const dayElement = document.querySelector(`.days div[data-date="${dateStr}"]`);
         
@@ -295,14 +468,12 @@ function addAppointmentsToDays(month, year) {
             
             // Añadir cada cita al día
             appointmentsByDate[dateStr].forEach(appointment => {
-                const appointmentElement = createAppointmentElement(appointment);
-                dayElement.appendChild(appointmentElement);
+                dayElement.appendChild(createAppointmentElement(appointment));
             });
         }
     });
 }
 
-// Función para crear elemento HTML de una cita
 function createAppointmentElement(appointment) {
     const appointmentDiv = document.createElement('div');
     appointmentDiv.classList.add('appointment');
@@ -319,7 +490,7 @@ function createAppointmentElement(appointment) {
     appointmentDiv.appendChild(timeDiv);
     appointmentDiv.appendChild(infoDiv);
     
-    // Evento para mostrar detalles de la cita (opcional)
+    // Evento para mostrar detalles de la cita
     appointmentDiv.addEventListener('click', () => {
         showAppointmentDetails(appointment);
     });
@@ -327,7 +498,6 @@ function createAppointmentElement(appointment) {
     return appointmentDiv;
 }
 
-// Función para mostrar detalles de la cita (opcional)
 function showAppointmentDetails(appointment) {
     alert(`
         Cita: ${appointment.patient} con ${appointment.doctor}
@@ -336,51 +506,465 @@ function showAppointmentDetails(appointment) {
         Notas: ${appointment.notes || 'Sin notas'}
     `);
     
-    // Aquí se podría implementar un modal más elegante para ver/editar/eliminar la cita
+    // Aquí podrías implementar un modal más elegante para ver/editar/eliminar la cita
 }
 
-// Funciones auxiliares para formateo de fechas y horas
+function fillDoctorsSelect() {
+    const doctorSelect = document.getElementById('appointmentDoctor');
+    if (!doctorSelect) return;
+    
+    doctorSelect.innerHTML = '<option value="">Seleccione un doctor</option>';
+    doctors.forEach(doctor => {
+        const option = document.createElement('option');
+        option.value = doctor.id;
+        option.textContent = `${doctor.name} (${doctor.specialty})`;
+        doctorSelect.appendChild(option);
+    });
+}
+
+function fillPatientsSelect() {
+    const patientSelect = document.getElementById('appointmentPatient');
+    if (!patientSelect) return;
+    
+    patientSelect.innerHTML = '<option value="">Seleccione un paciente</option>';
+    patients.forEach(patient => {
+        const option = document.createElement('option');
+        option.value = patient.id;
+        option.textContent = `${patient.name} (${patient.id})`;
+        patientSelect.appendChild(option);
+    });
+}
+
+// Funciones de datos
+function loadData() {
+    // Cargar datos desde localStorage
+    const savedDoctors = localStorage.getItem('doctors');
+    if (savedDoctors) doctors = JSON.parse(savedDoctors);
+
+    const savedPatients = localStorage.getItem('calendarPatients');
+    if (savedPatients) patients = JSON.parse(savedPatients);
+
+    // Cargar citas desde sessionStorage instead of localStorage
+    const savedAppointments = sessionStorage.getItem('calendarAppointments');
+    if (savedAppointments) appointments = JSON.parse(savedAppointments);
+
+    // Actualizar interfaces
+    updateDoctorsList();
+    updatePatientsList();
+}
+
+function clearAppointments() {
+    appointments = [];
+    sessionStorage.removeItem('calendarAppointments');
+    updateCalendar();
+}
+
+function savePatients() {
+    localStorage.setItem('calendarPatients', JSON.stringify(patients));
+}
+
+function addSampleData() {
+    // Añadir datos de muestra para pruebas
+    addDoctor('D001', 'Dr. John Smith', 'Dermatology');
+    addDoctor('D002', 'Dra. Maria García', 'Neurology');
+    addDoctor('D003', 'Dr. Robert Johnson', 'Pediatrics');
+    
+    addPatient('P001', 'Ana Martínez', 'ana@example.com', '555-1234', '1988-05-15', {
+        allergies: 'Penicilina', bloodType: 'A+'
+    });
+    addPatient('P002', 'Carlos Pérez', 'carlos@example.com', '555-5678', '1975-11-22', {
+        allergies: 'Ninguna', bloodType: 'O-'
+    });
+    addPatient('P003', 'Laura Torres', 'laura@example.com', '555-9012', '1996-03-10', {
+        allergies: 'Lácteos', bloodType: 'B+'
+    });
+}
+
+// Funciones de formateo
+function createOption(value, text) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = text;
+    return option;
+}
+
 function formatDateForInput(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return date.toISOString().split('T')[0];
 }
 
 function formatDate(year, month, day) {
-    const paddedMonth = String(month + 1).padStart(2, '0');
-    const paddedDay = String(day).padStart(2, '0');
-    return `${year}-${paddedMonth}-${paddedDay}`;
+    return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
 function formatDisplayDate(dateStr) {
     const date = new Date(dateStr);
-    const day = date.getDate();
-    const month = date.getMonth();
-    const year = date.getFullYear();
-    return `${day} de ${monthNames[month]} de ${year}`;
+    return `${date.getDate()} de ${monthNames[date.getMonth()]} de ${date.getFullYear()}`;
 }
 
 function formatTime(timeStr) {
-    return timeStr.substring(0, 5); // Formato 24h: "14:30"
+    return timeStr.substring(0, 5);
 }
 
-// Inicialización
-document.addEventListener('DOMContentLoaded', function() {
-    // Cargar citas guardadas
-    loadAppointments();
-    
-    // Sobrescribir la función updateCalendar original
-    const originalUpdateCalendar = window.updateCalendar;
-    window.updateCalendar = function() {
-        originalUpdateCalendar();
-        addAppointmentsToDays(parseInt(monthSelect.value), parseInt(yearSelect.value));
-    };
-    
-    // Actualizar el calendario inicial
-    updateCalendar();
-});
+// Add these functions to your existing JavaScript file
 
-// Inicializar
-fillSelectors();
-updateCalendar();
+// Function to set up search functionality
+function setupSearchFunctionality() {
+    // Get the search inputs
+    const doctorSearchInput = document.querySelector('.sidebar h2:first-of-type + .search-box');
+    const patientSearchInput = document.querySelector('.sidebar h2:nth-of-type(2) + .search-box');
+    
+    // Add event listeners for real-time search
+    if (doctorSearchInput) {
+        doctorSearchInput.addEventListener('input', function() {
+            searchDoctors(this.value.trim());
+        });
+    }
+    
+    if (patientSearchInput) {
+        patientSearchInput.addEventListener('input', function() {
+            searchPatients(this.value.trim());
+        });
+    }
+}
+
+// Function to search doctors by ID
+function searchDoctors(searchTerm) {
+    // If empty search, show all doctors
+    if (!searchTerm) {
+        updateDoctorsList();
+        return;
+    }
+    
+    // Convert search term to lowercase for case-insensitive search
+    searchTerm = searchTerm.toLowerCase();
+    
+    // Find doctors that match the search term (by ID or name - can extend this as needed)
+    const matchedDoctors = doctors.filter(doctor => 
+        doctor.id.toLowerCase().includes(searchTerm) || 
+        doctor.name.toLowerCase().includes(searchTerm)
+    );
+    
+    // Display only matched doctors
+    displayFilteredDoctors(matchedDoctors);
+    
+    // If we found a perfect match by ID, highlight that doctor
+    const exactMatch = doctors.find(doc => doc.id.toLowerCase() === searchTerm.toLowerCase());
+    if (exactMatch) {
+        highlightDoctor(exactMatch.id);
+    }
+}
+
+// Function to display filtered doctors list
+function displayFilteredDoctors(filteredDoctors) {
+    // Group filtered doctors by specialty for display
+    const doctorsBySpecialty = {};
+    filteredDoctors.forEach(doctor => {
+        if (!doctorsBySpecialty[doctor.specialty]) {
+            doctorsBySpecialty[doctor.specialty] = [];
+        }
+        doctorsBySpecialty[doctor.specialty].push(doctor);
+    });
+    
+    // Get or create doctor container
+    let doctorContainer = document.querySelector('.doctor-container');
+    if (!doctorContainer) {
+        doctorContainer = document.createElement('div');
+        doctorContainer.className = 'doctor-container';
+        const sidebar = document.querySelector('.sidebar');
+        const therapistFilter = document.getElementById('therapist-filter');
+        if (therapistFilter) {
+            therapistFilter.parentNode.insertBefore(doctorContainer, therapistFilter.nextSibling);
+        } else if (sidebar) {
+            const firstH2 = sidebar.querySelector('h2');
+            if (firstH2) {
+                sidebar.insertBefore(doctorContainer, firstH2.nextSibling.nextSibling.nextSibling);
+            }
+        }
+    }
+    
+    // Clear current content
+    doctorContainer.innerHTML = '';
+    
+    // If no doctors match, show a message
+    if (Object.keys(doctorsBySpecialty).length === 0) {
+        const noResultsDiv = document.createElement('div');
+        noResultsDiv.className = 'no-results';
+        noResultsDiv.textContent = 'No matching doctors found';
+        doctorContainer.appendChild(noResultsDiv);
+        return;
+    }
+    
+    // Create elements for each specialty and its doctors
+    Object.keys(doctorsBySpecialty).forEach(specialty => {
+        // Create specialty header
+        const specialtyDiv = document.createElement('div');
+        specialtyDiv.className = 'category expanded';
+        specialtyDiv.innerHTML = `<i></i>${specialty}`;
+        doctorContainer.appendChild(specialtyDiv);
+        
+        // Create subcategory for doctors
+        const subcategoryDiv = document.createElement('div');
+        subcategoryDiv.className = 'subcategory visible';
+        
+        // Add each doctor under this specialty
+        doctorsBySpecialty[specialty].forEach(doctor => {
+            const doctorDiv = document.createElement('div');
+            doctorDiv.className = 'doctor-item';
+            doctorDiv.textContent = doctor.name;
+            doctorDiv.setAttribute('data-id', doctor.id);
+            
+            // Add click event to select this doctor
+            doctorDiv.addEventListener('click', function() {
+                selectDoctor(doctor.id);
+            });
+            
+            subcategoryDiv.appendChild(doctorDiv);
+        });
+        
+        doctorContainer.appendChild(subcategoryDiv);
+    });
+}
+
+// Function to highlight a specific doctor
+function highlightDoctor(doctorId) {
+    // Remove highlight from all doctors
+    document.querySelectorAll('.doctor-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    // Add highlight to matching doctor
+    const doctorElement = document.querySelector(`.doctor-item[data-id="${doctorId}"]`);
+    if (doctorElement) {
+        doctorElement.classList.add('selected');
+        // Scroll the element into view
+        doctorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+// Function to select a doctor for filtering appointments
+function selectDoctor(doctorId) {
+    // Highlight the selected doctor
+    highlightDoctor(doctorId);
+    
+    // Update the search box with the doctor's ID
+    const searchBox = document.querySelector('.sidebar h2:first-of-type + .search-box');
+    if (searchBox) {
+        searchBox.value = doctorId;
+    }
+    
+    // Filter appointments on the calendar to show only this doctor's appointments
+    filterCalendarByDoctor(doctorId);
+}
+
+// Function to filter calendar appointments by doctor
+function filterCalendarByDoctor(doctorId) {
+    // Get current month and year from the select elements
+    const month = parseInt(monthSelect.value);
+    const year = parseInt(yearSelect.value);
+    
+    // Reset the calendar
+    generateDays(month, year);
+    
+    // Filter appointments by the selected doctor
+    const doctorAppointments = appointments.filter(appointment => 
+        appointment.doctor === doctorId
+    );
+    
+    // Add only the filtered appointments to the calendar
+    addFilteredAppointmentsToDays(doctorAppointments, month, year);
+}
+
+// Function to add filtered appointments to calendar days
+function addFilteredAppointmentsToDays(filteredAppointments, month, year) {
+    // Group appointments by date
+    const appointmentsByDate = {};
+    
+    filteredAppointments.forEach(appointment => {
+        const appointmentDate = new Date(appointment.date);
+        
+        // Only process if the appointment is in the current month and year
+        if (appointmentDate.getMonth() === month && appointmentDate.getFullYear() === year) {
+            const dateStr = formatDate(year, month, appointmentDate.getDate());
+            
+            if (!appointmentsByDate[dateStr]) {
+                appointmentsByDate[dateStr] = [];
+            }
+            
+            appointmentsByDate[dateStr].push(appointment);
+        }
+    });
+    
+    // Add appointments to the calendar days
+    Object.keys(appointmentsByDate).forEach(dateStr => {
+        const dayElement = document.querySelector(`.days div[data-date="${dateStr}"]`);
+        
+        if (dayElement) {
+            dayElement.classList.add('has-appointments');
+            
+            // Add each appointment to the day
+            appointmentsByDate[dateStr].forEach(appointment => {
+                dayElement.appendChild(createAppointmentElement(appointment));
+            });
+        }
+    });
+}
+
+// Function to search patients by ID
+function searchPatients(searchTerm) {
+    // If empty search, show all patients
+    if (!searchTerm) {
+        updatePatientsList();
+        return;
+    }
+    
+    // Convert search term to lowercase for case-insensitive search
+    searchTerm = searchTerm.toLowerCase();
+    
+    // Find patients that match the search term (by ID or name)
+    const matchedPatients = patients.filter(patient => 
+        patient.id.toLowerCase().includes(searchTerm) || 
+        patient.name.toLowerCase().includes(searchTerm)
+    );
+    
+    // Display only matched patients
+    displayFilteredPatients(matchedPatients);
+    
+    // If we found a perfect match by ID, highlight that patient
+    const exactMatch = patients.find(patient => patient.id.toLowerCase() === searchTerm.toLowerCase());
+    if (exactMatch) {
+        highlightPatient(exactMatch.id);
+    }
+}
+
+// Function to display filtered patients list
+function displayFilteredPatients(filteredPatients) {
+    // Get or create patient container
+    let patientContainer = document.querySelector('.patient-container');
+    if (!patientContainer) {
+        patientContainer = document.createElement('div');
+        patientContainer.className = 'patient-container';
+        const sidebar = document.querySelector('.sidebar');
+        const openDataBtn = sidebar.querySelector('.opendata');
+        if (openDataBtn) {
+            sidebar.insertBefore(patientContainer, openDataBtn.nextSibling);
+        } else {
+            const inputs = sidebar.querySelectorAll('input');
+            if (inputs.length >= 2) {
+                sidebar.insertBefore(patientContainer, inputs[1].nextSibling.nextSibling);
+            }
+        }
+    }
+    
+    // Clear current content
+    patientContainer.innerHTML = '';
+    
+    // If no patients match, show a message
+    if (filteredPatients.length === 0) {
+        const noResultsDiv = document.createElement('div');
+        noResultsDiv.className = 'no-results';
+        noResultsDiv.textContent = 'No matching patients found';
+        patientContainer.appendChild(noResultsDiv);
+        return;
+    }
+    
+    // Add each patient to the container
+    filteredPatients.forEach(patient => {
+        const patientDiv = document.createElement('div');
+        patientDiv.className = 'patient-item';
+        patientDiv.setAttribute('data-id', patient.id);
+        patientDiv.textContent = patient.name;
+        
+        // Add click event to select this patient
+        patientDiv.addEventListener('click', function() {
+            selectPatient(patient.id);
+        });
+        
+        patientContainer.appendChild(patientDiv);
+    });
+}
+
+// Function to highlight a specific patient
+function highlightPatient(patientId) {
+    // Remove highlight from all patients
+    document.querySelectorAll('.patient-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    // Add highlight to matching patient
+    const patientElement = document.querySelector(`.patient-item[data-id="${patientId}"]`);
+    if (patientElement) {
+        patientElement.classList.add('selected');
+        // Scroll the element into view
+        patientElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+// Function to select a patient for filtering appointments
+function selectPatient(patientId) {
+    // Highlight the selected patient
+    highlightPatient(patientId);
+    
+    // Update the search box with the patient's ID
+    const searchBox = document.querySelector('.sidebar h2:nth-of-type(2) + .search-box');
+    if (searchBox) {
+        searchBox.value = patientId;
+    }
+    
+    // Filter appointments on the calendar to show only this patient's appointments
+    filterCalendarByPatient(patientId);
+}
+
+// Function to filter calendar appointments by patient
+function filterCalendarByPatient(patientId) {
+    // Get current month and year from the select elements
+    const month = parseInt(monthSelect.value);
+    const year = parseInt(yearSelect.value);
+    
+    // Reset the calendar
+    generateDays(month, year);
+    
+    // Filter appointments by the selected patient
+    const patientAppointments = appointments.filter(appointment => 
+        appointment.patient === patientId
+    );
+    
+    // Add only the filtered appointments to the calendar
+    addFilteredAppointmentsToDays(patientAppointments, month, year);
+}
+
+// Update the setupEventListeners function to include search functionality
+function setupEventListeners() {
+    // Existing calendar events
+    monthSelect.addEventListener("change", updateCalendar);
+    yearSelect.addEventListener("change", updateCalendar);
+    
+    // Appointment modal events
+    document.querySelector('.AddEvent').addEventListener('click', openAppointmentModal);
+    document.querySelector('.close-modal').addEventListener('click', closeAppointmentModal);
+    document.querySelector('.cancel-btn').addEventListener('click', closeAppointmentModal);
+    
+    // Patient modal events
+    document.querySelector('.opendata').addEventListener('click', function() {
+        document.getElementById('modaloverlay').style.display = 'flex';
+    });
+    document.querySelector('.close-btn').addEventListener('click', function() {
+        document.getElementById('modaloverlay').style.display = 'none';
+    });
+    
+    // Therapist filter
+    therapistFilter.addEventListener('change', function() {
+        updateCalendar();
+    });
+    
+    // Appointment form submission
+    appointmentForm.addEventListener('submit', saveAppointment);
+    
+    // Set up search functionality
+    setupSearchFunctionality();
+}
+
+// Add CSS class for selected items (add this to your CSS)
+
+
+
+// Make sure to call setupEventListeners() when the DOM is loaded

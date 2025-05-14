@@ -440,3 +440,26 @@ iframe {
     padding: 6px 8px;
     border-radius: 8px;
 }
+
+
+.doctor-item.selected, .patient-item.selected {
+    background-color: #e0f7fa;
+    font-weight: bold;
+}
+
+.no-results {
+    padding: 10px;
+    color: #999;
+    font-style: italic;
+    text-align: center;
+}
+
+.doctor-item, .patient-item {
+    padding: 5px 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.doctor-item:hover, .patient-item:hover {
+    background-color: #f5f5f5;
+}
