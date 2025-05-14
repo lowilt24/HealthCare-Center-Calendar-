@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCalendar();
     
     // Comentar/descomentar la siguiente línea para agregar datos de muestra
-    // if (doctors.length === 0 && patients.length === 0) addSampleData();
+    if (doctors.length === 0 && patients.length === 0) addSampleData();
 });
 
 // Configurar listeners de eventos
