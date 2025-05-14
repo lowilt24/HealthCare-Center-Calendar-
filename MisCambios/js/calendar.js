@@ -476,37 +476,72 @@ function addAppointmentsToDays(month, year, selectedSpecialty = "View All") {
 
 function createAppointmentElement(appointment) {
     const appointmentDiv = document.createElement('div');
-    appointmentDiv.classList.add('appointment');
+    appointmentDiv.classList.add('event-container');
     appointmentDiv.setAttribute('data-id', appointment.id);
-    
-    const timeDiv = document.createElement('div');
-    timeDiv.classList.add('appointment-time');
-    timeDiv.textContent = `${formatTime(appointment.startTime)} - ${formatTime(appointment.endTime)}`;
-    
-    const infoDiv = document.createElement('div');
-    infoDiv.classList.add('appointment-info');
-    infoDiv.textContent = `${appointment.patient} con ${appointment.doctor}`;
-    
-    appointmentDiv.appendChild(timeDiv);
-    appointmentDiv.appendChild(infoDiv);
-    
+
+    // Obtener nombres completos de doctor y paciente
+    const doctor = doctors.find(doc => doc.id === appointment.doctor);
+    const doctorName = doctor ? doctor.name : appointment.doctor;
+
+    const patient = patients.find(p => p.id === appointment.patient);
+    const patientName = patient ? patient.name : appointment.patient;
+
+    // Crear el contenedor del texto del evento
+    const combinedDiv = document.createElement('p');
+    combinedDiv.textContent = `${formatTime(appointment.startTime)} - ${formatTime(appointment.endTime)} | ${patientName} (${appointment.patient}) con ${doctorName} (${appointment.doctor})`;
+    appointmentDiv.appendChild(combinedDiv);
+
     // Evento para mostrar detalles de la cita
     appointmentDiv.addEventListener('click', () => {
         showAppointmentDetails(appointment);
     });
-    
+
     return appointmentDiv;
 }
 
+
+
 function showAppointmentDetails(appointment) {
-    alert(`
-        Cita: ${appointment.patient} con ${appointment.doctor}
-        Fecha: ${formatDisplayDate(appointment.date)}
-        Horario: ${formatTime(appointment.startTime)} - ${formatTime(appointment.endTime)}
-        Notas: ${appointment.notes || 'Sin notas'}
-    `);
-    
-    // Aquí podrías implementar un modal más elegante para ver/editar/eliminar la cita
+    // Obtener los nombres completos de doctor y paciente
+    const patient = patients.find(p => p.id === appointment.patient);
+    const patientName = patient ? patient.name : appointment.patient;
+    const doctor = doctors.find(doc => doc.id === appointment.doctor);
+    const doctorName = doctor ? doctor.name : appointment.doctor;
+
+    // Crear modal dinámico
+    const modalOverlay = document.createElement('div');
+    modalOverlay.classList.add('modal-overlay');
+    modalOverlay.style.display = 'flex';
+
+    const modalContainer = document.createElement('div');
+    modalContainer.classList.add('modal-container');
+
+    // Crear encabezado del modal
+    const modalHeader = document.createElement('div');
+    modalHeader.classList.add('modal-header');
+    modalHeader.innerHTML = `<h3>Detalles de la Cita</h3><span class="close-modal">&times;</span>`;
+    modalContainer.appendChild(modalHeader);
+
+    // Crear cuerpo del modal con detalles de la cita
+    const modalBody = document.createElement('div');
+    modalBody.classList.add('modal-body');
+    modalBody.innerHTML = `
+        <p><strong>Paciente:</strong> ${patientName} (${appointment.patient})</p>
+        <p><strong>Doctor:</strong> ${doctorName} (${appointment.doctor})</p>
+        <p><strong>Fecha:</strong> ${formatDisplayDate(appointment.date)}</p>
+        <p><strong>Horario:</strong> ${formatTime(appointment.startTime)} - ${formatTime(appointment.endTime)}</p>
+        <p><strong>Notas:</strong> ${appointment.notes || 'Sin notas'}</p>
+    `;
+    modalContainer.appendChild(modalBody);
+
+    // Agregar modal al documento
+    modalOverlay.appendChild(modalContainer);
+    document.body.appendChild(modalOverlay);
+
+    // Manejar cierre del modal
+    modalHeader.querySelector('.close-modal').addEventListener('click', () => {
+        modalOverlay.remove();
+    });
 }
 
 function fillDoctorsSelect() {

@@ -355,33 +355,48 @@ iframe {
 }
 
 /* Estilos para las citas en el calendario */
-.appointment {
-    background-color: #e1e9f5;
-    border-left: 3px solid #0C41FF;
-    padding: 5px;
-    margin-bottom: 5px;
-    border-radius: 3px;
-    font-size: 12px;
-    cursor: pointer;
+
+.event-container {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    white-space: normal;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    padding: 8px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
 }
 
-.appointment-time {
-    font-weight: bold;
-    color: #0C41FF;
+.event-container p {
+    margin: 0;
+    font-size: 14px;
 }
 
-.appointment-info {
+/* Ajustes adicionales para mejorar el aspecto */
+.event-container {
+    background-color: rgba(100, 150, 250, 0.2);
+    border-radius: 8px;
+    border: 1px solid rgba(100, 150, 250, 0.4);
     color: #333;
 }
+
+/* Asegura que el cuadro se mantenga dentro de los límites del calendario */
+.calendar-cell {
+    position: relative;
+    padding: 4px;
+}
+
+.calendar-cell .event-container {
+    max-width: calc(100% - 8px);
+}
+
 
 /* Mejoras para los días del calendario */
 .days div {
     position: relative;
     padding-top: 25px;
-    overflow-y: auto;
+
     max-height: 120px;
 }
 
